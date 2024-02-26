@@ -96,7 +96,8 @@ var LoadFilePrompt = () => {
 }
 // Load function
 var TryLoadFile = () => {
-    SavedData.RetrieveFromFile();
+    const file = $("#file-upload").prop("files")[0];
+    SavedData.RetrieveFromFile(file);
 }
 
 // Upload image function
@@ -112,9 +113,13 @@ var clearImage = () => {
     $("#image-upload").click();
 }
 // Load Image function
-var TryLoadImage = () => {
+const TryLoadImage = () => {
     // Use jQuery to get the file
     var file = $('#image-upload')[0].files[0];
+    ReadImage(file);
+}
+
+const ReadImage = (file) => {
     if (file) {
         var reader = new FileReader();
         reader.onload = function(e) {
@@ -255,9 +260,8 @@ var SavedData = {
             mon = JSON.parse(savedData);
     },
 
-    RetrieveFromFile: function () {
-        let file = $("#file-upload").prop("files")[0],
-            reader = new FileReader();
+    RetrieveFromFile: function (file) {
+        const reader = new FileReader();
 
         reader.onload = function (e) {
             mon = JSON.parse(reader.result);
@@ -2269,6 +2273,34 @@ $(function () {
     $.getJSON("js/JSON/statblockdata.json", function (json) {
         data = json;
 
+    // initialise drag&drop
+    let b = $("body")[0];
+    let overlay = $("#dragndrop-overlay");
+    /* b.ondragover = b.ondragenter = evt => {
+        evt.preventDefault();
+    }; */
+    b.ondragover = evt => {
+        evt.preventDefault();
+    }
+    b.ondragenter = evt => {
+        evt.preventDefault();
+        overlay.removeClass("hidden");
+    }
+    overlay[0].ondragleave = evt => {
+        overlay.addClass("hidden");
+    }
+    b.ondrop = evt => {
+        evt.preventDefault();
+        overlay.addClass("hidden");
+        for (const file of evt.dataTransfer.files) {
+            if (file.name.toLowerCase().endsWith('.monster')) {
+                SavedData.RetrieveFromFile(file);
+            } else {
+                ReadImage(file);
+            }
+        }
+    }
+    
         // Set the default monster in case there isn't one saved
         GetVariablesFunctions.SetPreset(data.defaultPreset);
 
