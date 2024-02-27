@@ -2269,10 +2269,6 @@ $(function () {
         $("#monster-select-form").html("Unable to load documents.")
     });
 
-    // Load the json data
-    $.getJSON("js/JSON/statblockdata.json", function (json) {
-        data = json;
-
     // initialise drag&drop
     let b = $("body")[0];
     let overlay = $("#dragndrop-overlay");
@@ -2295,12 +2291,15 @@ $(function () {
         for (const file of evt.dataTransfer.files) {
             if (file.name.toLowerCase().endsWith('.monster')) {
                 SavedData.RetrieveFromFile(file);
-            } else {
+            } else if (file.type.startsWith('image/')) {
                 ReadImage(file);
             }
         }
     }
     
+    // Load the json data
+    $.getJSON("js/JSON/statblockdata.json", function (json) {
+        data = json;
         // Set the default monster in case there isn't one saved
         GetVariablesFunctions.SetPreset(data.defaultPreset);
 
@@ -2308,8 +2307,6 @@ $(function () {
         SavedData.RetrieveFromLocalStorage();
 
         Populate();
-    });
-
     FormFunctions.ShowHideFormatHelper();
 
     let isDragging = false;
