@@ -51,6 +51,7 @@ var mon = {
     abilities: [],
     actions: [],
     bonusActions: [],
+    inventory: [],
     reactions: [],
     legendaries: [],
     mythics: [],
@@ -276,7 +277,9 @@ var SavedData = {
 // Update the main stat block
 function UpdateStatblock(moveSeparationPoint) {
     // Set Separation Point
-    let separationMax = mon.abilities.length + mon.actions.length + mon.bonusActions.length + mon.reactions.length - 1;
+    let separationMax = mon.abilities.length + mon.actions.length +
+                        mon.bonusActions.length + mon.reactions.length + 
+                        mon.inventory.length - 1;
 
     if (mon.isLegendary)
         separationMax += (mon.legendaries.length == 0 ? 1 : mon.legendaries.length);
@@ -352,6 +355,7 @@ function UpdateStatblock(moveSeparationPoint) {
     if (mon.actions.length > 0) AddToTraitList(traitsHTML, mon.actions, "<h3>Actions</h3>");
     if (mon.bonusActions.length > 0) AddToTraitList(traitsHTML, mon.bonusActions, "<h3>Bonus Actions</h3>");
     if (mon.reactions.length > 0) AddToTraitList(traitsHTML, mon.reactions, "<h3>Reactions</h3>");
+    if (mon.inventory.length > 0) AddToTraitList(traitsHTML, mon.inventory, "<h3>Inventory</h3>");
     if (mon.isLegendary && (mon.legendaries.length > 0 || mon.legendariesDescription.length > 0))
         AddToTraitList(traitsHTML, mon.legendaries, mon.legendariesDescription == "" ?
             "<h3>Legendary Actions</h3><div class='property-block'></div>" :
@@ -597,7 +601,7 @@ function BuildMarkdown(isV3Markdown) {
     AddMarkdownTraitSection(markdownLines, isV3Markdown, "Actions", mon.actions);
     AddMarkdownTraitSection(markdownLines, isV3Markdown, "Bonus Actions", mon.bonusActions);
     AddMarkdownTraitSection(markdownLines, isV3Markdown, "Reactions", mon.reactions);
-
+    AddMarkdownTraitSection(markdownLines, isV3Markdown, "Inventory", mon.inventory);
     if (mon.isLegendary) {
         AddMarkdownTraitSection(markdownLines, isV3Markdown, "Legendary Actions", mon.legendaries, mon.legendariesDescription, null, LEGENDARY);
         if (mon.isMythic) AddMarkdownTraitSection(markdownLines, isV3Markdown, "Mythic Actions", mon.mythics, mon.mythicDescription, null, MYTHIC);
@@ -783,6 +787,7 @@ var FormFunctions = {
         this.MakeDisplayList("mythics", false, true);
         this.MakeDisplayList("lairs", false, true);
         this.MakeDisplayList("regionals", false, true);
+        this.MakeDisplayList("inventory", false, true);
 
         // Is Legendary?
         $("#is-legendary-input").prop("checked", mon.isLegendary);
@@ -883,6 +888,10 @@ var FormFunctions = {
             $("#add-mythic-button, #mythic-actions-form").hide();
             $("#add-lair-button, #add-regional-button, #lair-actions-form, #regional-actions-form").hide();
         }
+        mon.isLegendary = $("#is-legendary-input").prop("checked");
+        mon.isLegendary ?
+            $("#fieldset-legendary").removeClass('hide-fieldset'):
+            $("#fieldset-legendary").addClass('hide-fieldset');
     },
 
     ShowHideMythicCreature: function () {
@@ -1145,8 +1154,8 @@ var InputFunctions = {
     },
 
     AddAbilityInput: function (arrName) {
-        let abilityName = $("#abilities-name-input").val().trim(),
-            abilityDesc = $("#abilities-desc-input").val().trim();
+        const abilityName = $("#abilities-name-input").val().trim();
+        const abilityDesc = $("#abilities-desc-input").val().trim();
 
         if (abilityName.length == 0 || abilityDesc.length == 0)
             return;
@@ -1160,6 +1169,13 @@ var InputFunctions = {
         // Clear forms
         $("#abilities-name-input").val("");
         $("#abilities-desc-input").val("");
+    },
+
+    SelectMagicItem: function () {
+        let magicItemSlug = $("#magic-item-select").val();
+        const magicItem = magicItemById.get(magicItemSlug);
+       $("#abilities-name-input").val(magicItem.name);
+       $("#abilities-desc-input").val(magicItem.desc);
     },
 
     // Reset legendary description to default
@@ -1573,6 +1589,7 @@ var GetVariablesFunctions = {
         mon.actions = [];
         mon.bonusActions = [];
         mon.reactions = [];
+        mon.inventory = [];
         mon.legendaries = [];
         mon.mythics = []
         mon.lairs = [];
@@ -1580,6 +1597,7 @@ var GetVariablesFunctions = {
         let abilitiesPresetArr = preset.special_abilities,
             actionsPresetArr = preset.actions,
             bonusActionsPresetArr = preset.bonusActions,
+            inventoryPresetArr = preset.inventory,
             reactionsPresetArr = preset.reactions,
             legendariesPresetArr = preset.legendary_actions,
             mythicPresetArr = preset.mythic_actions,
@@ -1598,6 +1616,7 @@ var GetVariablesFunctions = {
         AbilityPresetLoop(actionsPresetArr, "actions");
         AbilityPresetLoop(bonusActionsPresetArr, "bonusActions");
         AbilityPresetLoop(reactionsPresetArr, "reactions");
+        AbilityPresetLoop(inventoryPresetArr, "inventory");
         if (mon.isLegendary)
             AbilityPresetLoop(legendariesPresetArr, "legendaries");
         if (mon.isMythic)
@@ -2173,6 +2192,7 @@ var ArrayFunctions = {
         return returnArr;
     }
 }
+const magicItemById = new Map();
 
 // Document ready function
 $(function () {
@@ -2191,22 +2211,24 @@ $(function () {
             sourcesBySlug.set(document.slug, document.title);
          });
         // Initialize a structure to hold the monsters categorized by document__slug
-        let monstersBySource = new Map([...sourcesBySlug.keys()].map(key => [key, []]));
-        let monsterSourceById = new Map();
+        const monstersBySource = new Map([...sourcesBySlug.keys()].map(key => [key, []]));
+        const monsterSourceById = new Map();
+        // Initialize a structure to hold the magic item categorized by type
+        const magicItemsByType = new Map();
         
         // Load the preset monster names, one book at a time
         for (const slug of sourcesBySlug.keys()) { 
             // Set new value and text for the existing single option
             const loadString = '--- Loading monsters from source book: ' + sourcesBySlug.get(slug) + ' ---';
             $("#monster-select option").first().text(loadString);
-            const data = await $.getJSON("https://api.open5e.com/monsters/?format=json&fields=slug,name&document__slug="+slug+"&limit=1000")
+            let data = await $.getJSON("https://api.open5e.com/v1/monsters/?format=json&fields=slug,name&document__slug="+slug+"&limit=1000")
                                 .fail(function () {
                                     $("#monster-select-form").html("Unable to load monsters from doc " + slug);
                                 });
             const monsters = data.results;
             monsters.sort((m1, m2) => {
-                if (m1.text < m2.text) return -1;
-                if (m1.text > m2.text) return 1;
+                if (m1.name < m2.name) return -1;
+                if (m1.name > m2.name) return 1;
                 return 0;
             })
 
@@ -2218,6 +2240,28 @@ $(function () {
                     monstersBySource.set(slug, group);
                 }
                 group.push({id: monster.slug, text: monster.name});
+            });
+            
+            data = await $.getJSON("https://api.open5e.com/v1/magicitems/?format=json&fields=slug,name,type,desc&document__slug="+slug+"&limit=1000")
+                                .fail(function () {
+                                    $("#monster-select-form").html("Unable to load magic items from doc " + slug);
+                                });
+            const magicItems = data.results;
+            magicItems.sort((m1, m2) => {
+                if (m1.name < m2.name) return -1;
+                if (m1.name > m2.name) return 1;
+                return 0;
+            })
+
+            magicItems.forEach(magicItem => {
+                magicItem.source = slug;
+                magicItemById.set(magicItem.slug, magicItem);
+                let group = magicItemsByType.get(magicItem.type);
+                if (!group) {
+                    group = [];
+                    magicItemsByType.set(magicItem.type, group);
+                }
+                group.push(magicItem);
             });
         }
 
@@ -2231,13 +2275,28 @@ $(function () {
         }
 
         // Convert monstersBySource to the format expected by Select2, using sourcesBySlug for group labels
-        const formattedData = Array.from(sourcesBySlug, ([key, name]) => ({
+        const formattedMonsterData = Array.from(sourcesBySlug, ([key, name]) => ({
             text: sourcesBySlug.get(name) || name, // Use human-readable name or fallback to document_slug
             children: monstersBySource.get(key) || []
         }));
 
+        // Convert monstersBySource to the format expected by Select2, using sourcesBySlug for group labels
+        // Initialize a structure to hold the magic item data formatted for Select2
+        const formattedMagicItemData = [];
+
+        // Iterate over the magicItemsByType map
+        magicItemsByType.forEach((group, type) => {
+            const children = [];
+            for (const item of group) {
+               children.push({id: item.slug, text: item.name});
+            }
+            formattedMagicItemData.push({text: type, children: children});
+        });
+
+        // sort the formatted magic item data alphabetically by text
+        formattedMagicItemData.sort((a, b) => (a.text > b.text) ? 1 : ((a.text < b.text) ? -1 : 0));
         
-        formattedData.unshift({text: '', children: [{id: 'default', text: 'Restore Default'}]})
+        formattedMonsterData.unshift({text: '', children: [{id: 'default', text: 'Restore Default'}]})
 
         // Customize how options and selected items are rendered
         const formatState = function (state) {
@@ -2248,22 +2307,37 @@ $(function () {
             return $state;
         }
         
-        const formatStateSelection = function (state) {
+        const formatStateSelectionMonster = function (state) {
             const monsterSourceSlug = monsterSourceById.get(state.id);
             if (monsterSourceSlug)
                 return state.text + ' (' + (sourcesBySlug.get(monsterSourceSlug) || monsterSourceSlug) + ')';
             return state.text;
         }
+        const formatStateSelectionMagicItem = function (state) {
+            const magicItemSourceSlug = magicItemById.get(state.id)?.source;
+            if (magicItemSourceSlug)
+                return state.text + ' (' + (sourcesBySlug.get(magicItemSourceSlug) || magicItemSourceSlug) + ')';
+            return state.text;
+        }
 
         // Initialize Select2
         $("#monster-select").select2({
-            data: formattedData,
+            data: formattedMonsterData,
             placeholder: "Select a monster",
             allowClear: true,
             theme: "default",
             width: 'resolve',
             templateResult: formatState, // Optional: for custom rendering
-            templateSelection: formatStateSelection // Optional: for custom rendering
+            templateSelection: formatStateSelectionMonster // Optional: for custom rendering
+        });
+        $("#magic-item-select").select2({
+            data: formattedMagicItemData,
+            placeholder: "Select a magic item",
+            allowClear: true,
+            theme: "default",
+            width: 'resolve',
+            templateResult: formatState, // Optional: for custom rendering
+            templateSelection: formatStateSelectionMagicItem// Optional: for custom rendering
         });
     }).fail(function () {
         $("#monster-select-form").html("Unable to load documents.")

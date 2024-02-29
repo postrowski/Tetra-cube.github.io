@@ -306,6 +306,24 @@ input[type="number"] {
     display: none;
 }
 
- .rotate_button {
+.rotate_button {
     border-radius: 50%;
  }
+
+fieldset {
+    border: 3px solid #91ab8e !important;
+    border-radius: 20px;
+    /*background-color: wheat or cornsilk*/
+}
+fieldset.hide-fieldset {
+    border: none !important;
+    background-color: unset;
+}
+legend {
+    margin: 0px 10px;
+    width: auto;
+    font-size: 1rem;
+}
+.fieldset-contents {
+	padding: 10px 40px 10px 10px;
+}

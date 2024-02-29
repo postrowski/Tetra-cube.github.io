@@ -76,7 +76,8 @@
                     <option value="">--- Loading ---</option>
                 </select>
                 <button type="button" id="monster-select-button"
-                        onclick="InputFunctions.GetPreset()">Use Preset</button></div>
+                        onclick="InputFunctions.GetPreset()">Use Preset</button>
+            </div>
             <br>
 
             <!-- The Actual Stat Block -->
@@ -542,7 +543,7 @@
                         </td>
                         <td>
                             <input id="short-name-input" type="text" value="" placeholder="None" style="width: 30%;">
-                            <div class="tooltip">?<span class="tooltiptext">This will replace [MON] in ability text,
+                            <div class="tooltipholder">ⓘ<span class="tooltiptext">This will replace [MON] in ability text,
                                     unless left blank.</span>
                             </div>
                         </td>
@@ -553,7 +554,7 @@
                         </td>
                         <td>
                             <input id="plural-name-input" type="text" value="" placeholder="None" style="width: 30%;">
-                            <div class="tooltip">?<span class="tooltiptext">This will replace [MONS] in ability
+                            <div class="tooltipholder">ⓘ<span class="tooltiptext">This will replace [MONS] in ability
                                     text, unless left blank.</span>
                             </div>
                         </td>
@@ -561,83 +562,100 @@
                     </tr>
                 </table>
                 <br>
-                <div>
-                    <label for="is-legendary-input"><b>Legendary Creature:</b> <input type="checkbox"
-                            id="is-legendary-input" onclick="FormFunctions.ShowHideLegendaryCreature()"></label>
-                </div>
-                <div id="legendary-actions-form">
-                    <br>
-                    <label for="is-mythic-input"><b>Mythic:</b> <input type="checkbox" id="is-mythic-input"
-                            onclick="FormFunctions.ShowHideMythicCreature()"></label>
-                    <label for="has-lair-input"><b>Lair:</b> <input type="checkbox" id="has-lair-input"
-                            onclick="FormFunctions.ShowHideLair()"></label>
-                    <label for="has-regional-input"><b>Regional:</b> <input type="checkbox" id="has-regional-input"
-                            onclick="FormFunctions.ShowHideRegional()"></label>
-                    <br><br>
-                    <b>Legendary Actions Description:</b>
-                    <div><label for="legendaries-descsection-input" style="width: 100%"><textarea
-                                id="legendaries-descsection-input" rows="4"></textarea></label></div>
-                    <div><button type="button" onclick="InputFunctions.LegendaryDescriptionDefaultInput()">Reset to
-                            Default</button></div>
-                </div>
-                <div id="mythic-actions-form">
-                    <br>
-                    <b>Mythic Actions Description:</b>
-                    <div><label for="mythic-descsection-input" style="width: 100%"><textarea
-                                id="mythic-descsection-input" rows="4"></textarea></label></div>
-                    <div><button type="button" onclick="InputFunctions.MythicDescriptionDefaultInput()">Reset to
-                            Default</button></div>
-                </div>
-                <div id="lair-actions-form">
-                    <br>
-                    <b>Lair Actions Description:</b>
-                    <div><label for="lair-descsection-input" style="width: 100%"><textarea id="lair-descsection-input"
-                                rows="4"></textarea></label></div>
-                    <b>Lair Actions End Note Description:</b>
-                    <div><label for="lair-end-descsection-input" style="width: 100%"><textarea
-                                id="lair-end-descsection-input" rows="4"></textarea></label></div>
-                    <div><button type="button" onclick="InputFunctions.LairDescriptionDefaultInput()">Reset to
-                            Default</button></div>
-                </div>
-                <div id="regional-actions-form">
-                    <br>
-                    <b>Regional Effects Description:</b>
-                    <div><label for="regional-descsection-input" style="width: 100%"><textarea
-                                id="regional-descsection-input" rows="4"></textarea></label></div>
-                    <b>Regional Effects End Note Description:</b>
-                    <div><label for="regional-end-descsection-input" style="width: 100%"><textarea
-                                id="regional-end-descsection-input" rows="4"></textarea></label></div>
-                    <div><button type="button" onclick="InputFunctions.RegionalDescriptionDefaultInput()">Reset to
-                            Default</button></div>
-                </div>
+
+                <fieldset id="fieldset-legendary">
+                    <legend>
+                        <label for="is-legendary-input"><b>Legendary Creature:</b> <input type="checkbox"
+                                id="is-legendary-input" onclick="FormFunctions.ShowHideLegendaryCreature()"></label>
+                    </legend>
+                    <div id="legendary-actions-form" class="fieldset-contents">
+                        <label for="is-mythic-input"><b>Mythic:</b> <input type="checkbox" id="is-mythic-input"
+                                onclick="FormFunctions.ShowHideMythicCreature()"></label>
+                        <label for="has-lair-input"><b>Lair:</b> <input type="checkbox" id="has-lair-input"
+                                onclick="FormFunctions.ShowHideLair()"></label>
+                        <label for="has-regional-input"><b>Regional:</b> <input type="checkbox" id="has-regional-input"
+                                onclick="FormFunctions.ShowHideRegional()"></label>
+                        <br><br>
+                        <b>Legendary Actions Description:</b>
+                        <div><label for="legendaries-descsection-input" style="width: 100%"><textarea
+                                    id="legendaries-descsection-input" rows="4"></textarea></label></div>
+                        <div><button type="button" onclick="InputFunctions.LegendaryDescriptionDefaultInput()">Reset to
+                                Default</button></div>
+                    </div>
+                    <div id="mythic-actions-form">
+                        <br>
+                        <b>Mythic Actions Description:</b>
+                        <div><label for="mythic-descsection-input" style="width: 100%"><textarea
+                                    id="mythic-descsection-input" rows="4"></textarea></label></div>
+                        <div><button type="button" onclick="InputFunctions.MythicDescriptionDefaultInput()">Reset to
+                                Default</button></div>
+                    </div>
+                    <div id="lair-actions-form">
+                        <br>
+                        <b>Lair Actions Description:</b>
+                        <div><label for="lair-descsection-input" style="width: 100%"><textarea id="lair-descsection-input"
+                                    rows="4"></textarea></label></div>
+                        <b>Lair Actions End Note Description:</b>
+                        <div><label for="lair-end-descsection-input" style="width: 100%"><textarea
+                                    id="lair-end-descsection-input" rows="4"></textarea></label></div>
+                        <div><button type="button" onclick="InputFunctions.LairDescriptionDefaultInput()">Reset to
+                                Default</button></div>
+                    </div>
+                    <div id="regional-actions-form">
+                        <br>
+                        <b>Regional Effects Description:</b>
+                        <div><label for="regional-descsection-input" style="width: 100%"><textarea
+                                    id="regional-descsection-input" rows="4"></textarea></label></div>
+                        <b>Regional Effects End Note Description:</b>
+                        <div><label for="regional-end-descsection-input" style="width: 100%"><textarea
+                                    id="regional-end-descsection-input" rows="4"></textarea></label></div>
+                        <div><button type="button" onclick="InputFunctions.RegionalDescriptionDefaultInput()">Reset to
+                                Default</button></div>
+                    </div>
+                </fieldset>
                 <br>
-                <b>Abilities:</b>
-                <div><label for="abilities-name-input" style="width: 100%;">Name: <input id="abilities-name-input"
-                            type="text" value="" style="margin-right: 40px; width: 30%;"></label></div>
-                <div><textarea id="abilities-desc-input" style="height: 10em;"></textarea></div>
-                <div>
-                    <button type="button" id="add-ability-button"
-                        onclick="InputFunctions.AddAbilityInput('abilities')">Add Ability</button>
-                    <button type="button" id="add-action-button"
-                        onclick="InputFunctions.AddAbilityInput('actions')">Add Action</button>
-                    <button type="button" id="add-bonus-action-button"
-                        onclick="InputFunctions.AddAbilityInput('bonusActions')">Add Bonus Action</button>
-                    <button type="button" id="add-reaction-button"
-                        onclick="InputFunctions.AddAbilityInput('reactions')">Add Reaction</button>
-                    <button type="button" id="add-legendary-button"
-                        onclick="InputFunctions.AddAbilityInput('legendaries')">Add Legendary Action</button>
-                    <button type="button" id="add-mythic-button"
-                        onclick="InputFunctions.AddAbilityInput('mythics')">Add Mythic Action</button>
-                    <button type="button" id="add-lair-button"
-                        onclick="InputFunctions.AddAbilityInput('lairs')">Add Lair Action</button>
-                    <button type="button" id="add-regional-button"
-                        onclick="InputFunctions.AddAbilityInput('regionals')">Add Regional Effect</button>
-                </div>
-                <div>
-                    <select id="common-ability-input"></select>
-                    <button type="button" id="add-common-ability-button"
-                        onclick="InputFunctions.AddCommonAbilityInput()">Use Preset</button>
-                </div>
+                <fieldset id="fieldset-ablilities">
+                    <legend>
+                       <b>Abilities:</b>
+                    </legend>
+                    <div class="fieldset-contents">
+                        <div><label for="abilities-name-input" style="width: 100%;">Name: <input id="abilities-name-input"
+                                    type="text" value="" style="margin-right: 40px; width: 30%;"></label></div>
+                        <div><textarea id="abilities-desc-input" style="height: 10em;"></textarea></div>
+                        <div>
+                            <button type="button" id="add-ability-button"
+                                onclick="InputFunctions.AddAbilityInput('abilities')">Add Ability</button>
+                            <button type="button" id="add-action-button"
+                                onclick="InputFunctions.AddAbilityInput('actions')">Add Action</button>
+                            <button type="button" id="add-bonus-action-button"
+                                onclick="InputFunctions.AddAbilityInput('bonusActions')">Add Bonus Action</button>
+                            <button type="button" id="add-reaction-button"
+                                onclick="InputFunctions.AddAbilityInput('reactions')">Add Reaction</button>
+                            <button type="button" id="add-legendary-button"
+                                onclick="InputFunctions.AddAbilityInput('legendaries')">Add Legendary Action</button>
+                            <button type="button" id="add-mythic-button"
+                                onclick="InputFunctions.AddAbilityInput('mythics')">Add Mythic Action</button>
+                            <button type="button" id="add-lair-button"
+                                onclick="InputFunctions.AddAbilityInput('lairs')">Add Lair Action</button>
+                            <button type="button" id="add-regional-button"
+                                onclick="InputFunctions.AddAbilityInput('regionals')">Add Regional Effect</button>
+                            <button type="button" id="magic-item-select-button"
+                                onclick="InputFunctions.AddAbilityInput('inventory')">Add Item</button>
+                        </div>
+                        <div>
+                            <select id="common-ability-input"></select>
+                            <button type="button" id="add-common-ability-button"
+                                onclick="InputFunctions.AddCommonAbilityInput()">Use Preset</button>
+                        </div>
+                        <div>
+                            Magic Item Search:<select id="magic-item-select" style="width: 450px">
+                                <option value="">--- Loading ---</option>
+                            </select>
+                            <button type="button" id="magic-item-select-button"
+                                    onclick="InputFunctions.SelectMagicItem()">Use Preset</button>
+                        </div>
+                    </div>
+                </fieldset>
                 <div>
                     <label for="format-helper-checkbox">Show Formatting Help: <input type="checkbox"
                             id="format-helper-checkbox" onclick="FormFunctions.ShowHideFormatHelper()"></label>
@@ -681,6 +699,9 @@
                     </div>
                     <div id="regionals-input-section"><b>Regional Effects:</b><br>
                         <ul id="regionals-input-list" class="statblock-list"></ul>
+                    </div>
+                    <div id="inventory-input-section"><b>Inventory:</b><br>
+                        <ul id="inventory-input-list" class="statblock-list"></ul>
                     </div>
                 </div>
                 <br>
